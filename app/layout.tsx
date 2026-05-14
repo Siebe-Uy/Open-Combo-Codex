@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://opencombocodex.com";
@@ -86,6 +87,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${roboto.variable} ${roboto.className} min-h-screen antialiased`}>
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
