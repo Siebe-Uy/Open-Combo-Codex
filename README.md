@@ -4,7 +4,7 @@ Open Combo Codex is an open-source Yu-Gi-Oh! TCG combo browser built for fast te
 
 The app is dark, mobile-first, searchable, and designed around plain Markdown combo files so players can add or fix lines through normal GitHub pull requests. Sky Striker and Mitsurugi are currently live, with the structure ready for more engines.
 
-Support development: [Ko-fi](https://ko-fi.com/siebeocc)
+Support development: [☕ Ko-fi](https://ko-fi.com/siebeocc)
 
 ## Features
 
