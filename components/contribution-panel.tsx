@@ -1,5 +1,8 @@
-import { Code2, FilePlus2, GitBranch } from "lucide-react";
+import { Code2, ExternalLink, FilePlus2, GitBranch } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const repositoryUrl = "https://github.com/Siebe-Uy/Open-Combo-Codex";
 
 const contributionSteps: Array<{
   Icon: LucideIcon;
@@ -35,6 +38,13 @@ export function ContributionPanel() {
               Open Combo Codex is built so players can correct lines, add variants, and publish new engines by
               editing plain `.md` files in a GitHub repo. The app turns those files into searchable combo cards.
             </p>
+            <Button asChild className="mt-6" variant="secondary">
+              <a href={repositoryUrl} target="_blank" rel="noreferrer">
+                <GitBranch className="h-4 w-4" />
+                Contribute on GitHub
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {contributionSteps.map(({ Icon, title, text }) => (

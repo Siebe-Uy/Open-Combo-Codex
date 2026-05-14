@@ -2,6 +2,8 @@ import Link from "next/link";
 import { GitPullRequestArrow } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const repositoryUrl = "https://github.com/Siebe-Uy/Open-Combo-Codex";
+
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/70 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
@@ -24,7 +26,7 @@ export function SiteHeader() {
           </a>
         </div>
         <Button asChild variant="secondary" size="sm">
-          <a href="#contribute" aria-label="Learn how to contribute combos">
+          <a href={repositoryUrl} target="_blank" rel="noreferrer" aria-label="Open the GitHub repository">
             <GitPullRequestArrow className="h-4 w-4" />
             <span className="hidden sm:inline">Open source</span>
           </a>
