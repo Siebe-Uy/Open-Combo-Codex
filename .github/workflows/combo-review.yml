@@ -1,0 +1,35 @@
+name: Combo Review
+
+on:
+  pull_request:
+    paths:
+      - "content/combos/**/*.md"
+      - "data/**/*-cards.ts"
+      - "scripts/validate-card-names.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/combo-review.yml"
+
+jobs:
+  card-name-review:
+    name: Validate combo card names
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Review card names
+        run: npm run validate:cards
