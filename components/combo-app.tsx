@@ -95,7 +95,7 @@ export function ComboApp({ combos, engines, deckLists, resources, cardPreviews, 
   }
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-slate-950 text-white">
+    <main className="relative isolate min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <EngineBackdrop
         engineId={activeEngineId}
         engineName={activeEngineName}

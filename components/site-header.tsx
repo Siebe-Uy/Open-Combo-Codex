@@ -14,7 +14,7 @@ const repositoryUrl = "https://github.com/Siebe-Uy/Open-Combo-Codex";
 export function SiteHeader() {
   return (
     <NavRolesProvider>
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/70 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/70 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3" aria-label="Primary navigation">
           <Link href="/" className="focus-ring shrink-0 rounded-full text-sm font-black tracking-[0.25em] text-white">
             OCC

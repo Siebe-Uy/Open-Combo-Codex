@@ -1,22 +1,27 @@
 "use client";
 
-import { type FormEvent, useEffect, useRef, useState } from "react";
-import { ChevronDown, LogIn, LogOut, Mail, UserRound } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { ChevronDown, LogIn, LogOut, UserRound, X } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { getAuthCallbackUrl } from "@/lib/auth-callback-url";
+import { SignInPanel } from "@/components/auth/sign-in-panel";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import { useNavRoles } from "@/components/nav/nav-roles-context";
 
 export function AuthMenu() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [emailSending, setEmailSending] = useState(false);
-  const [emailMessage, setEmailMessage] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const configured = isSupabaseConfigured();
+  const isMobile = useIsMobile();
+  const { signOut: signOutFromNav } = useNavRoles();
   const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!configured) {
@@ -44,76 +49,62 @@ export function AuthMenu() {
   }, [configured]);
 
   useEffect(() => {
+    if (!menuOpen || !isMobile) {
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen, isMobile]);
+
+  useEffect(() => {
+    if (!menuOpen || isMobile) {
+      return;
+    }
+
+    function handleClick(event: MouseEvent) {
+      if (panelRef.current?.contains(event.target as Node)) {
+        return;
+      }
+      setMenuOpen(false);
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      document.addEventListener("click", handleClick);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      document.removeEventListener("click", handleClick);
+    };
+  }, [menuOpen, isMobile]);
+
+  useEffect(() => {
     if (!menuOpen) {
       return;
     }
 
-    function handlePointerDown(event: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
         setMenuOpen(false);
       }
     }
 
-    document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
+    window.addEventListener("keydown", onKey);
+
+    return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  async function signInWithOAuth(provider: "github" | "discord") {
-    const supabase = createClient();
-
-    if (!supabase) {
-      return;
-    }
-
-    setEmailMessage(null);
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: getAuthCallbackUrl(),
-      },
-    });
-  }
-
-  async function signInWithEmail(event: FormEvent) {
-    event.preventDefault();
-    const supabase = createClient();
-
-    if (!supabase) {
-      return;
-    }
-
-    const trimmed = email.trim();
-
-    if (!trimmed) {
-      setEmailMessage("Enter your email address.");
-      return;
-    }
-
-    setEmailSending(true);
-    setEmailMessage(null);
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email: trimmed,
-      options: {
-        emailRedirectTo: getAuthCallbackUrl(),
-      },
-    });
-
-    setEmailSending(false);
-
-    if (error) {
-      setEmailMessage(error.message);
-      return;
-    }
-
-    setEmailMessage("Check your inbox for the sign-in link.");
-    setEmail("");
-  }
-
   async function signOut() {
-    const supabase = createClient();
-    await supabase?.auth.signOut();
+    await signOutFromNav();
     setUser(null);
+    setMenuOpen(false);
+  }
+
+  function closeMenu() {
     setMenuOpen(false);
   }
 
@@ -138,12 +129,12 @@ export function AuthMenu() {
       "duelist";
 
     return (
-      <div className="flex items-center gap-2">
-        <span className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-slate-200 md:inline-flex">
+      <div className="hidden items-center gap-2 md:flex">
+        <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-slate-200">
           <UserRound className="h-3.5 w-3.5 text-striker-cyan" />
           @{username}
         </span>
-        <Button type="button" variant="ghost" size="sm" onClick={signOut}>
+        <Button type="button" variant="ghost" size="sm" className="min-h-10" onClick={signOut}>
           <LogOut className="h-4 w-4" />
           <span className="hidden lg:inline">Sign out</span>
         </Button>
@@ -152,60 +143,67 @@ export function AuthMenu() {
   }
 
   return (
-    <div className="relative" ref={panelRef}>
-      <Button
-        type="button"
-        variant="secondary"
-        size="sm"
-        aria-expanded={menuOpen}
-        aria-haspopup="dialog"
-        onClick={() => setMenuOpen((open) => !open)}
-      >
-        <LogIn className="h-4 w-4" />
-        <span className="hidden sm:inline">Sign in</span>
-        <ChevronDown className={cn("h-4 w-4 transition", menuOpen && "rotate-180")} />
-      </Button>
-
-      {menuOpen ? (
-        <div
-          role="dialog"
-          aria-label="Choose sign-in method"
-          className="absolute right-0 z-50 mt-2 w-[min(100vw-2rem,20rem)] rounded-2xl border border-white/10 bg-slate-950/95 p-4 shadow-xl shadow-black/40 backdrop-blur-xl"
+    <>
+      <div className="relative" ref={panelRef}>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="min-h-10 min-w-10"
+          aria-expanded={menuOpen}
+          aria-haspopup="dialog"
+          onClick={() => setMenuOpen((open) => !open)}
         >
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Continue with</p>
-          <div className="flex flex-col gap-2">
-            <Button type="button" variant="secondary" size="sm" className="justify-start" onClick={() => signInWithOAuth("github")}>
-              GitHub
-            </Button>
-            <Button type="button" variant="secondary" size="sm" className="justify-start" onClick={() => signInWithOAuth("discord")}>
-              Discord
-            </Button>
-          </div>
+          <LogIn className="h-4 w-4" />
+          <span className="hidden sm:inline">Sign in</span>
+          <ChevronDown className={cn("hidden h-4 w-4 transition sm:block", menuOpen && "rotate-180")} />
+        </Button>
 
-          <div className="my-4 border-t border-white/10" />
+        {menuOpen && !isMobile ? (
+          <SignInDropdown onClose={closeMenu} />
+        ) : null}
+      </div>
 
-          <form onSubmit={signInWithEmail} className="space-y-2">
-            <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate-500" htmlFor="auth-email">
-              Email magic link
-            </label>
-            <input
-              id="auth-email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className="focus-ring w-full rounded-xl border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-white placeholder:text-slate-500"
-            />
-            <Button type="submit" variant="primary" size="sm" className="w-full" disabled={emailSending}>
-              <Mail className="h-4 w-4" />
-              {emailSending ? "Sending…" : "Send link"}
-            </Button>
-          </form>
+      {mounted && menuOpen && isMobile
+        ? createPortal(
+            <div className="fixed inset-0 z-[200] flex flex-col justify-end">
+              <button type="button" className="absolute inset-0 bg-black/70" aria-label="Close sign in" onClick={closeMenu} />
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-label="Sign in"
+                className="relative z-[201] max-h-[85vh] overflow-y-auto rounded-t-3xl border border-white/10 bg-slate-950 p-5 pb-8 shadow-2xl"
+              >
+                <MobileSignInHeader onClose={closeMenu} />
+                <SignInPanel emailInputId="auth-email-mobile" onAfterAction={closeMenu} />
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
+  );
+}
 
-          {emailMessage ? <p className="mt-3 text-xs text-slate-400">{emailMessage}</p> : null}
-        </div>
-      ) : null}
+function SignInDropdown({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      role="dialog"
+      aria-label="Choose sign-in method"
+      className="absolute right-0 z-[120] mt-2 w-[min(100vw-2rem,20rem)] rounded-2xl border border-white/10 bg-slate-950/95 p-4 shadow-xl shadow-black/40 backdrop-blur-xl"
+    >
+      <SignInPanel onAfterAction={onClose} />
+    </div>
+  );
+}
+
+function MobileSignInHeader({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="mb-4 flex items-center justify-between">
+      <p className="text-sm font-bold text-white">Sign in</p>
+      <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label="Close">
+        <X className="h-5 w-5" />
+      </Button>
     </div>
   );
 }
