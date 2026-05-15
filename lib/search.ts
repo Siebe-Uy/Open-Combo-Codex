@@ -2,7 +2,7 @@ import type { Combo, ComboFilters } from "@/lib/types";
 
 export const defaultFilters: ComboFilters = {
   query: "",
-  engineId: "sky-striker",
+  engineId: "All",
   category: "All",
   difficulty: "All",
   starter: "All",

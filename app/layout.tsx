@@ -5,7 +5,7 @@ import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://opencombocodex.com";
 const siteDescription =
-  "Open Combo Codex is an open-source Yu-Gi-Oh! TCG combo browser for searchable Sky Striker, Mitsurugi, and community-maintained combo documentation.";
+  "Open Combo Codex is an open-source Yu-Gi-Oh! TCG combo browser for searchable, community-maintained combo documentation across every engine.";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     "Yu-Gi-Oh",
     "YGO combos",
     "Yu-Gi-Oh combo guide",
-    "Sky Striker combos",
-    "Mitsurugi combos",
+    "Yu-Gi-Oh engine combos",
+    "TCG engine guide",
     "TCG combo browser",
     "open source combo database",
     "YGOPRODeck",

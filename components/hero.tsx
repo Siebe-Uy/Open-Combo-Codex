@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 type HeroProps = {
   combos: Combo[];
   resultCount: number;
+  engineCount: number;
 };
 
-export function Hero({ combos, resultCount }: HeroProps) {
+export function Hero({ combos, resultCount, engineCount }: HeroProps) {
   const { filters, setFilter, setExpandedId } = useComboStore();
   const isSearching = filters.query.trim().length > 0;
+  const contributorCount = new Set(combos.map((combo) => combo.contributor)).size;
 
   function openRandomCombo() {
     const combo = combos[Math.floor(Math.random() * combos.length)];
@@ -28,7 +30,7 @@ export function Hero({ combos, resultCount }: HeroProps) {
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-7">
           <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100">
             <GitPullRequestArrow className="h-4 w-4" />
-            Open-source combo docs, starting with Sky Striker
+            Open-source combo docs for every engine
           </div>
           <div className="space-y-4">
             <h1 className="max-w-4xl text-5xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl">
@@ -52,7 +54,7 @@ export function Hero({ combos, resultCount }: HeroProps) {
                   document.getElementById("combos")?.scrollIntoView({ behavior: "smooth" });
                 }
               }}
-              placeholder="Search Raye, Linkage, Widow Anchor..."
+              placeholder="Search a card, route, starter, or engine..."
               className="focus-ring min-h-12 flex-1 rounded-full bg-slate-950/70 px-5 text-sm text-white placeholder:text-slate-500"
             />
             <Button type="button" onClick={() => document.getElementById("combos")?.scrollIntoView({ behavior: "smooth" })}>
@@ -79,13 +81,12 @@ export function Hero({ combos, resultCount }: HeroProps) {
         >
           <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-striker-magenta/20 blur-3xl" />
           <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-striker-cyan/20 blur-3xl" />
-          <p className="text-sm uppercase tracking-[0.3em] text-striker-magenta">YGO Combo Bible</p>
-          <div className="mt-8 grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             {[
               ["Live combos", combos.length],
-              ["Markdown files", combos.length],
+              ["Contributors", contributorCount],
               ["Starter cards", new Set(combos.flatMap((combo) => combo.starterCards)).size],
-              ["Future engines", 3],
+              ["Engines", engineCount],
             ].map(([label, value]) => (
               <div key={label} className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
                 <p className="text-3xl font-black text-white">{value}</p>

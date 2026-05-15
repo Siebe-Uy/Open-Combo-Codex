@@ -39,7 +39,8 @@ export function EngineSelector({ engines }: EngineSelectorProps) {
               transition={{ delay: index * 0.06 }}
               viewport={{ once: true }}
               disabled={engine.status !== "Live"}
-              onClick={() => setFilter("engineId", engine.id)}
+              onClick={() => setFilter("engineId", active ? "All" : engine.id)}
+              aria-pressed={active}
               className={cn(
                 "focus-ring group min-h-48 rounded-[2rem] border p-5 text-left transition",
                 active ? "border-cyan-300/50 bg-cyan-300/10 shadow-glow" : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]",

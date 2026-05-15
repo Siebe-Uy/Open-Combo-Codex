@@ -12,7 +12,7 @@ const contributionSteps: Array<{
   {
     Icon: FilePlus2,
     title: "Add a file",
-    text: "Create `content/combos/sky-striker/new-line.md`.",
+    text: "Create `content/combos/<engine-id>/new-line.md`.",
   },
   {
     Icon: Code2,

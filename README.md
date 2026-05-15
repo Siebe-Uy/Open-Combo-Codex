@@ -2,7 +2,7 @@
 
 Open Combo Codex is an open-source Yu-Gi-Oh! TCG combo browser built for fast testing, tournament prep, and community-maintained combo documentation.
 
-The app is dark, mobile-first, searchable, and designed around plain Markdown combo files so players can add or fix lines through normal GitHub pull requests. Sky Striker and Mitsurugi are currently live, with the structure ready for more engines.
+The app is dark, mobile-first, searchable, and designed around plain Markdown combo files so players can add or fix lines for any engine through normal GitHub pull requests.
 
 Support development: [☕ Ko-fi](https://ko-fi.com/siebeocc)
 
@@ -68,24 +68,23 @@ LICENSE                      MIT license for project source and documentation
 
 Create a new `.md` file in `content/combos/<engine-id>/` with YAML frontmatter matching the existing examples.
 
-Examples:
+Example path:
 
-- Sky Striker: `content/combos/sky-striker/my-line.md`
-- Mitsurugi: `content/combos/mitsurugi/my-line.md`
+- `content/combos/<engine-id>/my-line.md`
 
 ```md
 ---
 id: my-combo-id
-engineId: sky-striker
+engineId: example-engine
 contributor: your-github-username
 title: "My Combo"
 category: Beginner Combos
 difficulty: Beginner
 starterCards:
-  - "Sky Striker Ace - Raye"
+  - "Official Starter Card Name"
 cardNames:
-  - "Sky Striker Ace - Raye"
-  - "Sky Striker Ace - Shizuku"
+  - "Official Starter Card Name"
+  - "Official Follow-up Card Name"
 cardCount: 1
 turnPreference: Either
 tags:
@@ -110,7 +109,7 @@ Optional contributor notes can live here.
 ## Combo Schema
 
 - `id`: Stable unique slug for links and favorites.
-- `engineId`: Folder/engine id, for example `sky-striker` or `mitsurugi`.
+- `engineId`: Folder/engine id, for example `example-engine`.
 - `contributor`: Username of the person who added or maintains the combo.
 - `title`: Display name for the combo.
 - `category`: One of `Beginner Combos`, `Main Deck Starters`, `OTK Lines`, `Going First`, `Going Second`, `Tricks & Tech`, or `Grind Game`.

@@ -60,7 +60,7 @@ export function ComboCard({ combo, cardPreviews }: ComboCardProps) {
         className="focus-ring flex w-full flex-col gap-5 p-5 text-left sm:p-6"
       >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex min-w-0 gap-4">
+          <div className="flex min-w-0 flex-1 gap-4">
             <div className="relative h-28 w-20 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-slate-950 shadow-lg shadow-black/30 sm:h-32 sm:w-24">
               {starterPreview.imageUrl ? (
                 <Image
@@ -99,11 +99,11 @@ export function ComboCard({ combo, cardPreviews }: ComboCardProps) {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-slate-400">
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="whitespace-nowrap rounded-full border border-white/10 px-3 py-1 text-xs text-slate-400">
               {combo.category}
             </span>
-            <ChevronDown className={cn("h-5 w-5 text-slate-400 transition", isExpanded && "rotate-180 text-striker-cyan")} />
+            <ChevronDown className={cn("h-5 w-5 shrink-0 text-slate-400 transition", isExpanded && "rotate-180 text-striker-cyan")} />
           </div>
         </div>
       </button>
