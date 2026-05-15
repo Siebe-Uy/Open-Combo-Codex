@@ -6,13 +6,7 @@ import type { User } from "@supabase/supabase-js";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-function authCallbackUrl() {
-  if (typeof window === "undefined") {
-    return "";
-  }
-  return `${window.location.origin}/auth/callback`;
-}
+import { getAuthCallbackUrl } from "@/lib/auth-callback-url";
 
 export function AuthMenu() {
   const [user, setUser] = useState<User | null>(null);
@@ -75,7 +69,7 @@ export function AuthMenu() {
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: authCallbackUrl(),
+        redirectTo: getAuthCallbackUrl(),
       },
     });
   }
@@ -101,7 +95,7 @@ export function AuthMenu() {
     const { error } = await supabase.auth.signInWithOtp({
       email: trimmed,
       options: {
-        emailRedirectTo: authCallbackUrl(),
+        emailRedirectTo: getAuthCallbackUrl(),
       },
     });
 

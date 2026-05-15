@@ -59,7 +59,8 @@ Optional Supabase setup:
 1. Copy `.env.example` to `.env.local`.
 2. Fill `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (from Supabase **Project Settings → API Keys**, publishable key — replaces the legacy anon JWT).
 3. Apply `supabase/migrations/001_accounts_votes_submissions.sql` in your Supabase project.
-4. Enable auth providers in Supabase (**Authentication → Providers**): GitHub, Discord, and/or **Email** (magic link). Set redirect URLs to include `http://localhost:3000/auth/callback` (and your production URL on Vercel).
+4. Enable auth providers in Supabase (**Authentication → Providers**): GitHub, Discord, and/or **Email** (magic link).
+5. **Production auth URLs:** In Supabase **Authentication → URL Configuration**, set **Site URL** to your live site (e.g. `https://your-app.vercel.app`). Under **Redirect URLs**, add `https://your-app.vercel.app/auth/callback` (and `http://localhost:3000/auth/callback` for local dev). On Vercel, set **`NEXT_PUBLIC_SITE_URL`** to that same canonical HTTPS URL (no trailing slash). If `redirectTo` is not allowlisted, Supabase sends users to **Site URL**, which often causes redirects back to localhost when Site URL was never updated.
 
 ## Project Structure
 
