@@ -41,15 +41,8 @@ export default async function EditorPage() {
         <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-sm leading-relaxed text-slate-300">
           <p className="font-semibold text-white">Where submissions go</p>
           <p className="mt-2">
-            When someone submits from this editor, it is stored with status <strong className="text-slate-100">pending</strong> in Supabase
-            (<code className="rounded bg-white/10 px-1.5 py-0.5 text-xs text-striker-cyan">combo_submissions</code>).{" "}
-            <strong className="text-slate-100">Maintainers</strong> review them in the moderation UI at{" "}
-            <Link href="/admin/submissions" className="font-semibold text-striker-cyan underline-offset-2 hover:underline">
-              /admin/submissions
-            </Link>{" "}
-            (accounts with <code className="rounded bg-white/10 px-1 py-0.5 text-xs">profiles.role</code> set to{" "}
-            <code className="rounded bg-white/10 px-1 py-0.5 text-xs">moderator</code> or{" "}
-            <code className="rounded bg-white/10 px-1 py-0.5 text-xs">admin</code>). After approval, the combo appears on the public homepage with other combos.
+            Your combo is sent for review and will not appear on the site right away. A maintainer checks the line, then approves it or
+            asks for changes. Once approved, it shows up in the public combo browser alongside the rest of the codex.
           </p>
         </div>
 
