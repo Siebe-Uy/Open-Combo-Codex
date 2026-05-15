@@ -15,7 +15,7 @@ import { Hero } from "@/components/hero";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import type { DeckList, ResourceLink } from "@/lib/types";
-import { getVoteKey, type VoteAggregateMap } from "@/lib/votes";
+import { getVoteKey, sortCombosByVotes, type VoteAggregateMap } from "@/lib/votes";
 
 const COMBOS_PER_PAGE = 6;
 
@@ -48,12 +48,12 @@ export function ComboApp({ combos, engines, deckLists, resources, cardPreviews, 
   const visibleCombos = useMemo(() => {
     const filteredCombos = filterCombos(combos, filters);
 
-    if (!filters.favoritesOnly) {
-      return filteredCombos;
-    }
+    const list = filters.favoritesOnly
+      ? filteredCombos.filter((combo) => favoriteIds.includes(combo.id))
+      : filteredCombos;
 
-    return filteredCombos.filter((combo) => favoriteIds.includes(combo.id));
-  }, [combos, favoriteIds, filters]);
+    return sortCombosByVotes(list, initialVotes);
+  }, [combos, favoriteIds, filters, initialVotes]);
   const featuredCombos = useMemo(
     () => getFeaturedCombos(activeEngineCombos),
     [activeEngineCombos],
@@ -165,7 +165,7 @@ export function ComboApp({ combos, engines, deckLists, resources, cardPreviews, 
                     <span className="font-semibold text-white">{visibleCombos.length}</span> combos
                   </span>
                   <span className="text-slate-500">
-                    Page {currentPage} of {totalPages}
+                    By vote score · Page {currentPage} of {totalPages}
                   </span>
                 </div>
 
