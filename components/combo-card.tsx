@@ -11,13 +11,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { renderCardNames } from "@/components/card-name";
 import { useState } from "react";
+import { VoteButtons } from "@/components/votes/vote-buttons";
+import type { VoteAggregate } from "@/lib/votes";
 
 type ComboCardProps = {
   combo: Combo;
   cardPreviews: Record<string, CardPreview>;
+  vote?: VoteAggregate;
 };
 
-export function ComboCard({ combo, cardPreviews }: ComboCardProps) {
+export function ComboCard({ combo, cardPreviews, vote }: ComboCardProps) {
   const { favoriteIds, toggleFavorite, expandedId, setExpandedId } = useComboStore();
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
@@ -154,6 +157,7 @@ export function ComboCard({ combo, cardPreviews }: ComboCardProps) {
                 <p className="mt-2 font-mono text-xs text-striker-cyan">{combo.sourcePath}</p>
               </div>
               <div className="flex flex-wrap gap-2">
+                <VoteButtons comboId={combo.id} comboSource={combo.source ?? "markdown"} initialVote={vote} />
                 <Button type="button" variant="secondary" size="sm" onClick={handleCopy}>
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   {copied ? "Copied" : "Copy steps"}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GitPullRequestArrow } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AuthMenu } from "@/components/auth/auth-menu";
 
 const repositoryUrl = "https://github.com/Siebe-Uy/Open-Combo-Codex";
 
@@ -24,13 +25,19 @@ export function SiteHeader() {
           <a className="focus-ring rounded-full hover:text-white" href="#contribute">
             Contribute
           </a>
+          <Link className="focus-ring rounded-full hover:text-white" href="/editor">
+            Editor
+          </Link>
         </div>
-        <Button asChild variant="secondary" size="sm">
-          <a href={repositoryUrl} target="_blank" rel="noreferrer" aria-label="Open the GitHub repository">
-            <GitPullRequestArrow className="h-4 w-4" />
-            <span className="hidden sm:inline">Open source</span>
-          </a>
-        </Button>
+        <div className="flex items-center gap-2">
+          <AuthMenu />
+          <Button asChild variant="secondary" size="sm">
+            <a href={repositoryUrl} target="_blank" rel="noreferrer" aria-label="Open the GitHub repository">
+              <GitPullRequestArrow className="h-4 w-4" />
+              <span className="hidden sm:inline">Open source</span>
+            </a>
+          </Button>
+        </div>
       </nav>
     </header>
   );

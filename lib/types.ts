@@ -19,6 +19,7 @@ export type CardPreview = {
 export type Combo = {
   id: string;
   engineId: string;
+  source?: "markdown" | "submission";
   contributor: string;
   title: string;
   category: ComboCategory;

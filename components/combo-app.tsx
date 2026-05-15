@@ -15,6 +15,7 @@ import { Hero } from "@/components/hero";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import type { DeckList, ResourceLink } from "@/lib/types";
+import { getVoteKey, type VoteAggregateMap } from "@/lib/votes";
 
 const COMBOS_PER_PAGE = 6;
 
@@ -24,9 +25,10 @@ type ComboAppProps = {
   deckLists: DeckList[];
   resources: ResourceLink[];
   cardPreviews: Record<string, CardPreview>;
+  initialVotes?: VoteAggregateMap;
 };
 
-export function ComboApp({ combos, engines, deckLists, resources, cardPreviews }: ComboAppProps) {
+export function ComboApp({ combos, engines, deckLists, resources, cardPreviews, initialVotes = {} }: ComboAppProps) {
   const { filters, favoriteIds, setExpandedId, setFilter } = useComboStore();
   const [currentPage, setCurrentPage] = useState(1);
   const selectedEngine = engines.find((engine) => engine.id === filters.engineId);
@@ -168,7 +170,12 @@ export function ComboApp({ combos, engines, deckLists, resources, cardPreviews }
                 </div>
 
                 {paginatedCombos.map((combo) => (
-                  <ComboCard key={combo.id} combo={combo} cardPreviews={cardPreviews} />
+                  <ComboCard
+                    key={combo.id}
+                    combo={combo}
+                    cardPreviews={cardPreviews}
+                    vote={initialVotes[getVoteKey(combo.id, combo.source ?? "markdown")]}
+                  />
                 ))}
 
                 {totalPages > 1 ? (

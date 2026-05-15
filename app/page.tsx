@@ -2,12 +2,19 @@ import { ComboApp } from "@/components/combo-app";
 import { deckLists, resourceLinks } from "@/data/decklists";
 import { engines } from "@/data/engines";
 import { getCombosFromMarkdown } from "@/data/combos";
+import { getApprovedCombosFromDatabase } from "@/data/db-combos";
+import { getVoteAggregates } from "@/data/votes";
 import { getYgoProDeckCardPreviews } from "@/data/ygoprodeck";
 
 export default async function Home() {
-  const combos = getCombosFromMarkdown();
+  const markdownCombos = getCombosFromMarkdown();
+  const databaseCombos = await getApprovedCombosFromDatabase();
+  const combos = [...markdownCombos, ...databaseCombos];
   const comboCardNames = combos.flatMap((combo) => combo.cardNames);
-  const cardPreviews = await getYgoProDeckCardPreviews(comboCardNames);
+  const [cardPreviews, initialVotes] = await Promise.all([
+    getYgoProDeckCardPreviews(comboCardNames),
+    getVoteAggregates(combos),
+  ]);
 
   return (
     <ComboApp
@@ -16,6 +23,7 @@ export default async function Home() {
       deckLists={deckLists}
       resources={resourceLinks}
       cardPreviews={cardPreviews}
+      initialVotes={initialVotes}
     />
   );
 }

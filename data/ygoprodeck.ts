@@ -1,4 +1,8 @@
 import type { CardPreview } from "@/lib/types";
+import { brandedCardNames, brandedCards } from "@/data/branded-cards";
+import { doomzCardNames, doomzCards } from "@/data/doomz-cards";
+import { dracotailCardNames, dracotailCards } from "@/data/dracotail-cards";
+import { kewlTuneCardNames, kewlTuneCards } from "@/data/kewl-tune-cards";
 import { mitsurugiCardNames, mitsurugiCards } from "@/data/mitsurugi-cards";
 import { skyStrikerCardNames, skyStrikerCards } from "@/data/sky-striker-cards";
 
@@ -55,9 +59,20 @@ async function fetchCardPreview(name: string): Promise<CardPreview | undefined> 
 const fallbackCards: Record<string, CardPreview> = {
   ...skyStrikerCards,
   ...mitsurugiCards,
+  ...kewlTuneCards,
+  ...dracotailCards,
+  ...brandedCards,
+  ...doomzCards,
 };
 
-const defaultCardNames = [...skyStrikerCardNames, ...mitsurugiCardNames];
+const defaultCardNames = [
+  ...skyStrikerCardNames,
+  ...mitsurugiCardNames,
+  ...kewlTuneCardNames,
+  ...dracotailCardNames,
+  ...brandedCardNames,
+  ...doomzCardNames,
+];
 
 export async function getYgoProDeckCardPreviews(cardNames = defaultCardNames) {
   const uniqueNames = Array.from(new Set(cardNames));

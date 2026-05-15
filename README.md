@@ -14,6 +14,7 @@ Support development: [☕ Ko-fi](https://ko-fi.com/siebeocc)
 - Expandable combo cards with readable numbered steps.
 - Starter-card thumbnails and hover card previews powered by YGOPRODeck image/data lookups.
 - Copy-to-clipboard, share links, random combo, and local favorite storage.
+- Optional Supabase accounts, persistent up/down votes, and moderated visual combo submissions.
 - Automatic PR validation for card-name typos so broken images/tooltips are caught before merge.
 - Engine-aware animated backgrounds derived from card art.
 
@@ -26,6 +27,7 @@ Support development: [☕ Ko-fi](https://ko-fi.com/siebeocc)
 - Zustand
 - Lucide icons
 - YGOPRODeck API for card data and images
+- Supabase Auth + Postgres for accounts, votes, and editor submissions
 
 ## Getting Started
 
@@ -47,9 +49,17 @@ Run verification:
 
 ```bash
 npm run validate:cards
+npm run validate:supabase
 npm run lint
 npm run build
 ```
+
+Optional Supabase setup:
+
+1. Copy `.env.example` to `.env.local`.
+2. Fill `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (from Supabase **Project Settings → API Keys**, publishable key — replaces the legacy anon JWT).
+3. Apply `supabase/migrations/001_accounts_votes_submissions.sql` in your Supabase project.
+4. Enable auth providers in Supabase (**Authentication → Providers**): GitHub, Discord, and/or **Email** (magic link). Set redirect URLs to include `http://localhost:3000/auth/callback` (and your production URL on Vercel).
 
 ## Project Structure
 
@@ -60,9 +70,18 @@ content/combos/<engine>/     Open-source combo Markdown files
 data/                        Engine metadata, card fallbacks, deck/resources
 lib/                         Shared types, search, clipboard, utilities
 scripts/validate-card-names.mjs
+supabase/migrations/          Database schema and RLS policies
 .github/workflows/           PR validation workflow
 LICENSE                      MIT license for project source and documentation
 ```
+
+## Accounts, Voting, And Editor
+
+Anonymous browsing remains fully available. When Supabase is configured, signed-in users can vote on any combo and submit combos through `/editor`.
+
+Visual-editor submissions are saved to `combo_submissions` with `pending` status. Moderators and admins can review them at `/admin/submissions`, then approve, request changes, or reject. Approved database submissions are merged into the public combo feed alongside Markdown combos.
+
+Use `profiles.role = 'moderator'` or `profiles.role = 'admin'` to grant review access.
 
 ## Add A Combo
 
