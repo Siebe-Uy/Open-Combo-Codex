@@ -2,7 +2,21 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import type { Database } from "@/lib/supabase/types";
+
+async function syncModeratorNav(db: SupabaseClient<Database>, userId: string | undefined, setShow: (show: boolean) => void) {
+  if (!userId) {
+    setShow(false);
+    return;
+  }
+
+  const { data } = await db.from("profiles").select("role").eq("id", userId).maybeSingle();
+  const role = data?.role;
+
+  setShow(role === "moderator" || role === "admin");
+}
 
 export function ModeratorNavLink() {
   const [show, setShow] = useState(false);
@@ -12,28 +26,16 @@ export function ModeratorNavLink() {
       return;
     }
 
-    const supabase = createClient();
+    const client = createClient();
 
-    if (!supabase) {
+    if (!client) {
       return;
     }
 
-    async function syncModeratorNav(userId: string | undefined) {
-      if (!userId) {
-        setShow(false);
-        return;
-      }
+    client.auth.getUser().then(({ data }) => syncModeratorNav(client, data.user?.id, setShow));
 
-      const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
-      const role = data?.role;
-
-      setShow(role === "moderator" || role === "admin");
-    }
-
-    supabase.auth.getUser().then(({ data }) => syncModeratorNav(data.user?.id));
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      syncModeratorNav(session?.user?.id);
+    const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
+      syncModeratorNav(client, session?.user?.id, setShow);
     });
 
     return () => listener.subscription.unsubscribe();
