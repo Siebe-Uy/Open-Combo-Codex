@@ -2,6 +2,8 @@ import Link from "next/link";
 import { GitPullRequestArrow } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthMenu } from "@/components/auth/auth-menu";
+import { EditorNavLink } from "@/components/nav/editor-nav-link";
+import { ModeratorNavLink } from "@/components/nav/moderator-nav-link";
 
 const repositoryUrl = "https://github.com/Siebe-Uy/Open-Combo-Codex";
 
@@ -25,9 +27,8 @@ export function SiteHeader() {
           <a className="focus-ring rounded-full hover:text-white" href="#contribute">
             Contribute
           </a>
-          <Link className="focus-ring rounded-full hover:text-white" href="/editor">
-            Editor
-          </Link>
+          <EditorNavLink />
+          <ModeratorNavLink />
         </div>
         <div className="flex items-center gap-2">
           <AuthMenu />

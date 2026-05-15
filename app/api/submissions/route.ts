@@ -15,7 +15,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Sign in to submit combos." }, { status: 401 });
   }
 
-  const parsed = normalizeComboInput(await request.json());
+  const { data: profile } = await supabase.from("profiles").select("username").eq("id", userData.user.id).maybeSingle();
+
+  const contributor =
+    profile?.username ??
+    userData.user.user_metadata?.user_name ??
+    userData.user.user_metadata?.preferred_username ??
+    userData.user.email?.split("@")[0] ??
+    "contributor";
+
+  const body = await request.json();
+  const parsed = normalizeComboInput({ ...body, contributor });
   const { data, error } = await supabase
     .from("combo_submissions")
     .insert({

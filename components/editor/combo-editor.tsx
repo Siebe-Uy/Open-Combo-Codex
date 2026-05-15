@@ -208,7 +208,11 @@ export function ComboEditor({ engines, contributor, canSubmit }: ComboEditorProp
           </Button>
         </div>
         {status ? <p className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-sm text-slate-200">{status}</p> : null}
-        {!canSubmit ? <p className="text-sm text-amber-200">Sign in with Supabase enabled to submit directly. Markdown export still works.</p> : null}
+        {!canSubmit ? (
+          <p className="text-sm text-amber-200">
+            Database submissions need Supabase env vars on this deployment. Markdown export still works; paste into GitHub if needed.
+          </p>
+        ) : null}
       </form>
 
       <aside className="space-y-4">

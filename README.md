@@ -77,7 +77,7 @@ LICENSE                      MIT license for project source and documentation
 
 ## Accounts, Voting, And Editor
 
-Anonymous browsing remains fully available. When Supabase is configured, signed-in users can vote on any combo and submit combos through `/editor`.
+Anonymous browsing remains fully available. When Supabase is configured, signed-in users can vote on any combo. The **visual editor** (`/editor`) is only available **after sign-in** so submissions use your account username.
 
 Visual-editor submissions are saved to `combo_submissions` with `pending` status. Moderators and admins can review them at `/admin/submissions`, then approve, request changes, or reject. Approved database submissions are merged into the public combo feed alongside Markdown combos.
 

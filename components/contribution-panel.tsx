@@ -1,4 +1,5 @@
-import { Code2, ExternalLink, FilePlus2, GitBranch } from "lucide-react";
+import Link from "next/link";
+import { Code2, ExternalLink, FilePlus2, GitBranch, PenLine } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -38,6 +39,19 @@ export function ContributionPanel() {
               Open Combo Codex is built so players can correct lines, add variants, and publish new engines by
               editing plain `.md` files in a GitHub repo. The app turns those files into searchable combo cards.
             </p>
+            <div className="mt-5 flex gap-3 rounded-2xl border border-striker-cyan/20 bg-cyan-300/[0.06] p-4 text-sm leading-6 text-slate-200">
+              <PenLine className="mt-0.5 h-5 w-5 shrink-0 text-striker-cyan" aria-hidden />
+              <div>
+                <p className="font-semibold text-white">Visual editor</p>
+                <p className="mt-1 text-slate-300">
+                  <strong className="text-slate-100">Sign in</strong> with the button in the top-right header, then use the{" "}
+                  <Link href="/editor" className="font-semibold text-striker-cyan underline-offset-2 hover:underline">
+                    visual editor
+                  </Link>{" "}
+                  to fill out a combo and submit it for review—no GitHub CLI or Markdown workflow needed for new lines on existing engines.
+                </p>
+              </div>
+            </div>
             <Button asChild className="mt-6" variant="secondary">
               <a href={repositoryUrl} target="_blank" rel="noreferrer">
                 <GitBranch className="h-4 w-4" />

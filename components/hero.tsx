@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { BookOpen, GitPullRequestArrow, Shuffle } from "lucide-react";
 import type { Combo } from "@/lib/types";
@@ -39,6 +40,14 @@ export function Hero({ combos, resultCount, engineCount }: HeroProps) {
             <p className="max-w-2xl text-lg leading-8 text-slate-300">
               A sleek, fast, tournament-ready Yu-Gi-Oh! combo browser where every route is easy to inspect,
               copy, favorite, and improve through Markdown pull requests.
+            </p>
+            <p className="max-w-2xl text-sm leading-7 text-slate-400">
+              You can also{" "}
+              <strong className="font-semibold text-slate-200">sign in</strong> (top-right) and use the{" "}
+              <Link href="/editor" className="font-semibold text-striker-cyan underline-offset-2 hover:underline">
+                visual editor
+              </Link>{" "}
+              to submit combos for review without touching Git.
             </p>
           </div>
           <div className="glass-panel flex flex-col gap-3 rounded-[2rem] p-3 sm:flex-row">
