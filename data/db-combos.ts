@@ -5,7 +5,6 @@ import type { Combo } from "@/lib/types";
 type ApprovedSubmission = {
   id: string;
   combo: unknown;
-  profiles: { username: string } | { username: string }[] | null;
 };
 
 export async function getApprovedCombosFromDatabase(): Promise<Combo[]> {
@@ -17,7 +16,7 @@ export async function getApprovedCombosFromDatabase(): Promise<Combo[]> {
 
   const { data, error } = await supabase
     .from("combo_submissions")
-    .select("id, combo, profiles:author_id(username)")
+    .select("id, combo")
     .eq("status", "approved")
     .order("reviewed_at", { ascending: false });
 
@@ -25,7 +24,7 @@ export async function getApprovedCombosFromDatabase(): Promise<Combo[]> {
     return [];
   }
 
-  const submissions = data as unknown as ApprovedSubmission[];
+  const submissions = data as ApprovedSubmission[];
 
   return submissions.flatMap((submission) => {
     const parsed = comboInputSchema.safeParse(submission.combo);
@@ -34,13 +33,11 @@ export async function getApprovedCombosFromDatabase(): Promise<Combo[]> {
       return [];
     }
 
-    const profile = Array.isArray(submission.profiles) ? submission.profiles[0] : submission.profiles;
-
     return {
       ...parsed.data,
       id: submission.id,
       source: "submission",
-      contributor: profile?.username ?? parsed.data.contributor,
+      contributor: parsed.data.contributor,
       sourcePath: `supabase:combo_submissions/${submission.id}`,
     } satisfies Combo;
   });

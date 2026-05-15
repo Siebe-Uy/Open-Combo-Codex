@@ -1,5 +1,5 @@
 import { ComboApp } from "@/components/combo-app";
-import { deckLists, resourceLinks } from "@/data/decklists";
+import { resourceLinks } from "@/data/decklists";
 import { engines } from "@/data/engines";
 import { getCombosFromMarkdown } from "@/data/combos";
 import { getApprovedCombosFromDatabase } from "@/data/db-combos";
@@ -20,7 +20,6 @@ export default async function Home() {
     <ComboApp
       combos={combos}
       engines={engines}
-      deckLists={deckLists}
       resources={resourceLinks}
       cardPreviews={cardPreviews}
       initialVotes={initialVotes}

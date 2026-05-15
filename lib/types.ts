@@ -56,6 +56,7 @@ export type DeckCardGroup = {
 };
 
 export type DeckList = {
+  engineId: string;
   name: string;
   description: string;
   groups: DeckCardGroup[];

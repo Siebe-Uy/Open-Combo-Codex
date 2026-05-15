@@ -2,7 +2,8 @@
 
 import { type CSSProperties, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { Star } from "lucide-react";
+import { PaginationControls } from "@/components/pagination-controls";
 import type { CardPreview, Combo, Engine } from "@/lib/types";
 import { filterCombos } from "@/lib/search";
 import { useComboStore } from "@/store/use-combo-store";
@@ -14,7 +15,8 @@ import { FilterPanel } from "@/components/filter-panel";
 import { Hero } from "@/components/hero";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import type { DeckList, ResourceLink } from "@/lib/types";
+import { getDeckListsForEngine } from "@/data/decklists";
+import type { ResourceLink } from "@/lib/types";
 import { getVoteKey, sortCombosByVotes, type VoteAggregateMap } from "@/lib/votes";
 
 const COMBOS_PER_PAGE = 6;
@@ -22,13 +24,12 @@ const COMBOS_PER_PAGE = 6;
 type ComboAppProps = {
   combos: Combo[];
   engines: Engine[];
-  deckLists: DeckList[];
   resources: ResourceLink[];
   cardPreviews: Record<string, CardPreview>;
   initialVotes?: VoteAggregateMap;
 };
 
-export function ComboApp({ combos, engines, deckLists, resources, cardPreviews, initialVotes = {} }: ComboAppProps) {
+export function ComboApp({ combos, engines, resources, cardPreviews, initialVotes = {} }: ComboAppProps) {
   const { filters, favoriteIds, setExpandedId, setFilter } = useComboStore();
   const [currentPage, setCurrentPage] = useState(1);
   const selectedEngine = engines.find((engine) => engine.id === filters.engineId);
@@ -57,6 +58,10 @@ export function ComboApp({ combos, engines, deckLists, resources, cardPreviews, 
   const featuredCombos = useMemo(
     () => getFeaturedCombos(activeEngineCombos),
     [activeEngineCombos],
+  );
+  const activeDeckLists = useMemo(
+    () => getDeckListsForEngine(filters.engineId),
+    [filters.engineId],
   );
   const totalPages = Math.max(1, Math.ceil(visibleCombos.length / COMBOS_PER_PAGE));
   const paginatedCombos = useMemo(
@@ -183,6 +188,7 @@ export function ComboApp({ combos, engines, deckLists, resources, cardPreviews, 
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={goToPage}
+                    ariaLabel="Combo pages"
                   />
                 ) : null}
               </>
@@ -196,73 +202,15 @@ export function ComboApp({ combos, engines, deckLists, resources, cardPreviews, 
         </div>
       </section>
 
-      <DeckResources deckLists={deckLists} resources={resources} />
+      <DeckResources
+        deckLists={activeDeckLists}
+        resources={resources}
+        engineName={selectedEngine?.name}
+        showAllEngines={filters.engineId === "All"}
+      />
       <ContributionPanel />
       <SiteFooter />
     </main>
-  );
-}
-
-function PaginationControls({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}) {
-  const pages = getPaginationPages(currentPage, totalPages);
-
-  return (
-    <nav
-      className="glass-panel flex flex-col gap-3 rounded-[2rem] p-3 sm:flex-row sm:items-center sm:justify-between"
-      aria-label="Combo pages"
-    >
-      <button
-        type="button"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-slate-200 transition hover:bg-white/[0.08] disabled:pointer-events-none disabled:opacity-40"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Previous
-      </button>
-
-      <div className="flex flex-wrap justify-center gap-2">
-        {pages.map((page, index) =>
-          page === "ellipsis" ? (
-            <span key={`ellipsis-${index}`} className="flex h-10 w-10 items-center justify-center text-slate-500">
-              ...
-            </span>
-          ) : (
-            <button
-              key={page}
-              type="button"
-              onClick={() => onPageChange(page)}
-              aria-current={page === currentPage ? "page" : undefined}
-              className={`focus-ring h-10 min-w-10 rounded-full px-3 text-sm font-bold transition ${
-                page === currentPage
-                  ? "bg-striker-cyan text-slate-950"
-                  : "border border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]"
-              }`}
-            >
-              {page}
-            </button>
-          ),
-        )}
-      </div>
-
-      <button
-        type="button"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-slate-200 transition hover:bg-white/[0.08] disabled:pointer-events-none disabled:opacity-40"
-      >
-        Next
-        <ChevronRight className="h-4 w-4" />
-      </button>
-    </nav>
   );
 }
 
@@ -357,31 +305,6 @@ function getFeaturedCombos(combos: Combo[]) {
       return a.cardCount - b.cardCount || a.title.localeCompare(b.title);
     })
     .slice(0, 3);
-}
-
-function getPaginationPages(currentPage: number, totalPages: number) {
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-  }
-
-  const pages: Array<number | "ellipsis"> = [1];
-  const start = Math.max(2, currentPage - 1);
-  const end = Math.min(totalPages - 1, currentPage + 1);
-
-  if (start > 2) {
-    pages.push("ellipsis");
-  }
-
-  for (let page = start; page <= end; page += 1) {
-    pages.push(page);
-  }
-
-  if (end < totalPages - 1) {
-    pages.push("ellipsis");
-  }
-
-  pages.push(totalPages);
-  return pages;
 }
 
 function hashEngineHue(value: string) {

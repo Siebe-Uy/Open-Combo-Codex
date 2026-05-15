@@ -9,7 +9,8 @@ type PendingSubmission = {
   combo: unknown;
   review_notes: string | null;
   created_at: string;
-  profiles: { username: string; display_name: string | null } | { username: string; display_name: string | null }[] | null;
+  author_id?: string;
+  profiles: { username: string; display_name: string | null } | null;
 };
 
 export default async function AdminSubmissionsPage() {
@@ -30,14 +31,26 @@ export default async function AdminSubmissionsPage() {
   }
 
   const supabase = await createClient();
-  const { data } = supabase
+  const { data, error } = supabase
     ? await supabase
         .from("combo_submissions")
-        .select("id, status, combo, review_notes, created_at, profiles:author_id(username, display_name)")
+        .select("id, status, combo, review_notes, created_at, author_id")
         .eq("status", "pending")
         .order("created_at", { ascending: true })
-    : { data: [] };
-  const submissions = (data ?? []) as unknown as PendingSubmission[];
+    : { data: [], error: null };
+
+  let submissions = (data ?? []) as unknown as PendingSubmission[];
+
+  if (supabase && submissions.length) {
+    const authorIds = [...new Set(submissions.map((row) => (row as { author_id: string }).author_id))];
+    const { data: profiles } = await supabase.from("profiles").select("id, username, display_name").in("id", authorIds);
+    const profileById = new Map(profiles?.map((p) => [p.id, p]) ?? []);
+
+    submissions = submissions.map((submission) => ({
+      ...submission,
+      profiles: profileById.get((submission as { author_id: string }).author_id) ?? null,
+    }));
+  }
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-8 text-white sm:px-6 lg:px-8">
@@ -50,11 +63,17 @@ export default async function AdminSubmissionsPage() {
           <h1 className="mt-3 text-4xl font-black">Pending combo submissions</h1>
         </div>
 
+        {error ? (
+          <p className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
+            Could not load submissions: {error.message}
+          </p>
+        ) : null}
+
         {submissions?.length ? (
           <div className="space-y-4">
             {submissions.map((submission) => {
               const combo = submission.combo as unknown as ComboInput;
-              const profileData = Array.isArray(submission.profiles) ? submission.profiles[0] : submission.profiles;
+              const profileData = submission.profiles;
 
               return (
                 <article key={submission.id} className="glass-panel grid gap-5 rounded-[2rem] p-5 lg:grid-cols-[1fr_20rem]">
